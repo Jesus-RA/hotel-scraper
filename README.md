@@ -14,3 +14,19 @@ A Node.js application that scrapes room prices from multiple hostels in Puerto E
 
 - Node.js 16+
 - npm or pnpm
+
+## Installation
+1. npm install
+2. npx playwright install --with-deps chromium
+
+## Execution
+Syntaxis
+```sh
+node main <start_date> <end_date>
+```
+Date format: `DD/MM/YY`
+
+Example
+```sh
+node main 01/05/2025 25/05/2025
+```
