@@ -6,6 +6,10 @@ import dayjs from 'dayjs';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+import customParseFormat from 'dayjs/plugin/customParseFormat.js';
+
+dayjs.extend(customParseFormat);
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -76,8 +80,23 @@ const hostels = [
 
 ]
 
-const startDate = dayjs().format('YYYY-MM-DD');
-const endDate = dayjs().endOf('month').format('YYYY-MM-DD');
+let startDate = dayjs().startOf('month').format('YYYY-MM-DD');
+let endDate = dayjs().endOf('month').format('YYYY-MM-DD');
+
+const [customStartDate, customEndDate] = process.argv.slice(2);
+
+if(customStartDate) {
+    startDate = dayjs(customStartDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+}
+
+if(customEndDate) {
+    endDate = dayjs(customEndDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+}
+
+if(dayjs(startDate).isAfter(dayjs(endDate))) {
+    console.log('La fecha de inicio no puede ser mayor a la fecha de fin');
+    process.exit(1);
+}
 
 await Promise.all(hostels.map(async (hostel) => {
     const rooms = await scrapeHostelWorldPerDay(hostel.path, startDate, endDate, 1, hostel.roomNames);
@@ -92,4 +111,4 @@ hostelsNames.forEach(hostel => {
     parseJsonToCSV(jsonFilePath, csvFilePath);
 });
 
-console.log('Done');
+console.log('Proceso completado, los archivos se han guardado en la carpeta hostels-rooms');
