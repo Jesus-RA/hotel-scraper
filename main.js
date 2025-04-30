@@ -1,5 +1,5 @@
-import { scrapeHostelWorldPerDay, writeToFile } from './scrapper.js';
-import parseJsonToCSV from './parseJsonToCSV.js';;
+import { scrapeHostelWorldPerDay, writeToFile } from './scripts/scraper.js';
+import parseJsonToCSV from './scripts/parseJsonToCSV.js';;
 import path from 'path';
 import dayjs from 'dayjs';
 
