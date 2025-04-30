@@ -28,8 +28,6 @@ function parseJsonToCSV(jsonFilePath, csvFilePath) {
     
     // Write to CSV file
     fs.writeFileSync(csvFilePath, csvContent);
-    
-    console.log(`CSV file successfully created at: ${csvFilePath}`);
     return true;
   } catch (error) {
     console.error('Error processing JSON to CSV:', error);

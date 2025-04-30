@@ -80,35 +80,48 @@ const hostels = [
 
 ]
 
-let startDate = dayjs().startOf('month').format('YYYY-MM-DD');
-let endDate = dayjs().endOf('month').format('YYYY-MM-DD');
+let startDate = dayjs().startOf('month');
+let endDate;
 
 const [customStartDate, customEndDate] = process.argv.slice(2);
 
 if(customStartDate) {
-    startDate = dayjs(customStartDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    startDate = dayjs(customStartDate, 'DD/MM/YYYY');
 }
 
 if(customEndDate) {
-    endDate = dayjs(customEndDate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+    endDate = dayjs(customEndDate, 'DD/MM/YYYY');
+}else{
+    endDate = dayjs(startDate).endOf('month');
 }
 
-if(dayjs(startDate).isAfter(dayjs(endDate))) {
+// console.log({ startDate, endDate });
+
+console.log('Iniciando proceso... \n');
+console.log(`Fecha de inicio: ${startDate.format('DD/MM/YYYY')} \n`);
+console.log(`Fecha de fin: ${endDate.format('DD/MM/YYYY')} \n`);
+
+if(startDate.isAfter(endDate)) {
     console.log('La fecha de inicio no puede ser mayor a la fecha de fin');
     process.exit(1);
 }
 
+
 await Promise.all(hostels.map(async (hostel) => {
-    const rooms = await scrapeHostelWorldPerDay(hostel.path, startDate, endDate, 1, hostel.roomNames);
+    console.log(`\nProcesando ${hostel.name}`)
+    const rooms = await scrapeHostelWorldPerDay(hostel.path, startDate.format('YYYY-MM-DD'), endDate.format('YYYY-MM-DD'), 1, hostel.roomNames);
     await writeToFile(`hostels-rooms/json/${hostel.name}.json`, rooms);
+    console.log(`\n${hostel.name} procesado correctamente`)
 }))
 
 const hostelsNames = hostels.map(hostel => hostel.name);
 
+console.log('\n\nProcesando archivos JSON a CSV...\n')
 hostelsNames.forEach(hostel => {
     const jsonFilePath = path.join(__dirname, `hostels-rooms/json/${hostel}.json`);
     const csvFilePath = path.join(__dirname, `hostels-rooms/csv/${hostel}.csv`);
     parseJsonToCSV(jsonFilePath, csvFilePath);
 });
+console.log('Archivos JSON convertidos a CSV correctamente \n\n')
 
 console.log('Proceso completado, los archivos se han guardado en la carpeta hostels-rooms');
