@@ -21,6 +21,7 @@ ehthumbs.db
 Thumbs.db
 
 # Hostels rooms
-hostels-rooms/
 hostels-rooms/json/*
 hostels-rooms/csv/*
+!hostels-rooms/json/.gitkeep
+!hostels-rooms/csv/.gitkeep
