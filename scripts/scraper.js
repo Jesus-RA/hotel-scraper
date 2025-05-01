@@ -25,49 +25,61 @@ async function scrapeHostelWorldPerDay(hostelPath, startDate, endDate, guests = 
     const results = [];
 
     for(let i = 0; i < days; i++) {
-        const start = dayjs(startDate).add(i, 'day').format('YYYY-MM-DD');
-        const end = dayjs(startDate).add(i+1, 'day').format('YYYY-MM-DD');
+        const start = dayjs(startDate).add(i, 'day');
+        const end = dayjs(startDate).add(i+1, 'day');
 
-        url.searchParams.set('from', start);
-        url.searchParams.set('to', end);
+        console.log(`\n\n\t * Procesando ${hostelPath} for date range ${start.format('DD/MM/YYYY')} - ${end.format('DD/MM/YYYY')}`)
+
+        url.searchParams.set('from', start.format('YYYY-MM-DD'));
+        url.searchParams.set('to', end.format('YYYY-MM-DD'));
         
         await page.goto(url.toString());
-        await page.waitForSelector('.availability-wrapper .table-container .room-container');
-    
-        const privateRooms = await page.$$eval(privateRoomTypeSelector, (rooms, roomNames) => {
-            return rooms
-                .filter(room => roomNames.includes(room.querySelector('.room-title-container')?.textContent?.trim()))
-                .map(room => {
-                    const roomName = room.querySelector('.room-title-container')?.textContent?.trim() || 'Not found';
-                    const price = room.querySelector('.rate-price-line .body-1-bld')?.textContent?.trim()?.replace('MXN', '') || 'Not found';
-    
-                    return {
-                        room: roomName,
-                        price,
-                        type: 'private'
-                    };
-                });
-        }, roomNames);
-    
-        const dormRooms = await page.$$eval(dormRoomTypeSelector, (rooms, roomNames) => {
-            return rooms
-                .filter(room => roomNames.includes(room.querySelector('.room-title-container')?.textContent?.trim()))
-                .map(room => {
-                    const roomName = room.querySelector('.room-title-container')?.textContent?.trim() || 'Not found';
-                    const price = room.querySelector('.rate-price-line .body-1-bld')?.textContent?.trim()?.replace('MXN', '') || 'Not found';
-    
-                    return {
-                        room: roomName,
-                        price,
-                        type: 'dorm'
-                    };
-                });
-        }, roomNames);
+        let rooms = [];
+
+        try{
+            // Wait for the rooms to be visible
+            await page.waitForSelector('.availability-wrapper .table-container .room-container', { timeout: 10000 });
+
+            const privateRooms = await page.$$eval(privateRoomTypeSelector, (rooms, roomNames) => {
+                return rooms
+                    .filter(room => roomNames.includes(room.querySelector('.room-title-container')?.textContent?.trim()))
+                    .map(room => {
+                        const roomName = room.querySelector('.room-title-container')?.textContent?.trim() || 'Not found';
+                        const price = room.querySelector('.rate-price-line .body-1-bld')?.textContent?.trim()?.replace('MXN', '') || 'Not found';
+        
+                        return {
+                            room: roomName,
+                            price,
+                            type: 'private'
+                        };
+                    });
+            }, roomNames);
+        
+            const dormRooms = await page.$$eval(dormRoomTypeSelector, (rooms, roomNames) => {
+                return rooms
+                    .filter(room => roomNames.includes(room.querySelector('.room-title-container')?.textContent?.trim()))
+                    .map(room => {
+                        const roomName = room.querySelector('.room-title-container')?.textContent?.trim() || 'Not found';
+                        const price = room.querySelector('.rate-price-line .body-1-bld')?.textContent?.trim()?.replace('MXN', '') || 'Not found';
+        
+                        return {
+                            room: roomName,
+                            price,
+                            type: 'dorm'
+                        };
+                    });
+            }, roomNames);
+
+            rooms = [...privateRooms, ...dormRooms];
+        }catch(error){
+            // If no rooms are found, push an empty object to the results array
+            console.log(`\n\n\t * No se encontraron habitaciones disponibles para ${hostelPath} en el rango de fechas ${start.format('DD/MM/YYYY')} - ${end.format('DD/MM/YYYY')}`)
+        }
 
         results.push({
-            start_date: start,
-            end_date: end,
-            rooms: [...privateRooms, ...dormRooms]
+            start_date: start.format('YYYY-MM-DD'),
+            end_date: end.format('YYYY-MM-DD'),
+            rooms,
         })
     }
 

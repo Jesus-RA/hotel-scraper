@@ -124,4 +124,4 @@ hostelsNames.forEach(hostel => {
 });
 console.log('Archivos JSON convertidos a CSV correctamente \n\n')
 
-console.log('Proceso completado, los archivos se han guardado en la carpeta hostels-rooms');
+console.log('Proceso completado, los archivos se han guardado en la carpeta hostels-rooms ✅');
