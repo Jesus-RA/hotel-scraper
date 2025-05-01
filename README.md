@@ -16,8 +16,14 @@ A Node.js application that scrapes room prices from multiple hostels in Puerto E
 - npm or pnpm
 
 ## Installation
-1. npm install
-2. npx playwright install --with-deps chromium
+1. Install dependencies
+```
+npm install
+```
+2. Install Playwright chromium
+```
+npx playwright install --with-deps chromium
+```
 
 ## Execution
 Syntaxis
