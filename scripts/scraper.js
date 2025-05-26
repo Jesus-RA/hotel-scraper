@@ -32,9 +32,14 @@ async function scrapeHostelWorldPerDay(hostelPath, startDate, endDate, guests = 
 
         url.searchParams.set('from', start.format('YYYY-MM-DD'));
         url.searchParams.set('to', end.format('YYYY-MM-DD'));
-        
-        await page.goto(url.toString());
+
         let rooms = [];
+        
+        try{
+            await page.goto(url.toString(), { waitUntil: 'domcontentloaded' });
+        }catch(error){
+            console.log("Error al navegar a " + url.toString() + "\n" + error);
+        }
 
         try{
             // Wait for the rooms to be visible

@@ -77,17 +77,74 @@ const hostels = [
             'Estándar 10 Cama Dormitorio mixto',
         ]
     },
-
-]
+    {
+        name: 'Madre-Tierra-Hotel-Coworking-Hostel',
+        path: 'Madre-Tierra-Hotel-Coworking-Hostel/Puerto-Escondido/316134',
+        roomNames: [
+            'Básico 2 camas privadas Baño compartido',
+            'Estándar 5 Cama Dormitorios femeninos',
+            'Estándar 5 Cama Dormitorio mixto',
+        ]
+    },
+    {
+        name: 'Nopalero-Hostel',
+        path: 'Nopalero-Hostel/Puerto-Escondido/312199',
+        roomNames: [
+            'Estándar 8 Cama Dormitorios femeninos',
+            'Estándar 8 Cama Dormitorio mixto',
+        ]
+    },
+    {
+        name: 'Villa-Bonobo',
+        path: 'Villa-Bonobo/Puerto-Escondido/309229',
+        roomNames: [
+            'Estándar Cama de matrimonio privada Baño',
+            'Estándar 3 Cama Habitación familiar Baño',
+            'De lujo Cama de matrimonio privada Baño',
+            'De lujo Cama de matrimonio privada Baño',
+            'Estándar 4 Cama Dormitorio mixto Baño',
+        ]
+    },
+    {
+        name: 'Bonita-Escondida',
+        path: 'Bonita-Escondida/Puerto-Escondido/295767',
+        roomNames: [
+            'Superior Cama de matrimonio privada Baño',
+            'De lujo 2 camas privadas Baño',
+            'De lujo 4 Cama Dormitorios femeninos Baño',
+            'Estándar 6 Cama Dormitorio mixto Baño',
+        ]
+    },
+    {
+        name: 'La-Palmera-Hostel',
+        path: 'La-Palmera-Hostel/Puerto-Escondido/321038',
+        roomNames: [
+            'De lujo 6 Cama Dormitorios femeninos',
+            'De lujo 6 Cama Dormitorio mixto',
+        ]
+    }
+];
 
 let startDate = dayjs().startOf('month');
 let endDate;
 
 const [customStartDate, customEndDate] = process.argv.slice(2);
+const errors = [];
 
-if(customStartDate) {
-    startDate = dayjs(customStartDate, 'DD/MM/YYYY');
+if(customStartDate && !dayjs(customStartDate, 'DD/MM/YYYY', true).isValid()) {
+    errors.push('La fecha de inicio no es valida, el formato debe ser DD/MM/YYYY');
 }
+
+if(customEndDate && !dayjs(customEndDate, 'DD/MM/YYYY', true).isValid()) {
+    errors.push('La fecha de fin no es valida, el formato debe ser DD/MM/YYYY');
+}
+
+if(errors.length > 0) {
+    console.log(errors.join('\n'));
+    process.exit(1);
+}
+
+startDate = dayjs(customStartDate, 'DD/MM/YYYY');
 
 if(customEndDate) {
     endDate = dayjs(customEndDate, 'DD/MM/YYYY');
